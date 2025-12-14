@@ -10,7 +10,7 @@ Este projeto implementa um pipeline ETL completo que:
 - **Load**: Armazena os dados em banco de dados (SQLite ou PostgreSQL)
 - **Limpeza Automática**: Remove dados antigos mantendo apenas os últimos 90 dias
 
-O pipeline roda automaticamente coletando dados a cada 1 hora de forma contínua, com limpeza automática para manter apenas os dados recentes.
+O pipeline roda automaticamente coletando dados a 5 minutos de forma contínua, com limpeza automática para manter apenas os dados recentes.
 
 ## 🛠️ Tecnologias
 
@@ -66,17 +66,25 @@ python src/pipeline.py
 ```
 
 O pipeline irá:
-- Coletar dados a cada 1 hora de forma contínua
+- Coletar dados a cada 5 minutos de forma contínua
 - Executar limpeza automática mantendo apenas os últimos 90 dias
 - Rodar indefinidamente até ser interrompido
 
-## ☁️ Deploy no Render (Produção)
+## ☁️ Deploy na Nuvem (Produção)
 
 Para rodar 24/7 na nuvem, consulte o arquivo [DEPLOY.md](DEPLOY.md) para instruções detalhadas.
 
-**Resumo rápido:**
+**⚠️ Nota sobre Render**: O Render requer plano pago (Starter $7/mês) para Background Workers. O plano gratuito não inclui esta funcionalidade.
+
+**Alternativas gratuitas:**
+- **Railway** - Plano free com créditos mensais
+- **Fly.io** - Plano free disponível
+- **PythonAnywhere** - Plano free limitado
+- **Replit** - Plano free disponível
+
+**Resumo rápido (Render):**
 1. Faça push do código para GitHub
-2. Crie um Background Worker no Render
+2. Crie um Background Worker no Render (plano pago necessário)
 3. Configure as variáveis de ambiente
 4. Deploy automático!
 
@@ -97,7 +105,7 @@ POSTGRES_PORT=5432
 POSTGRES_DB=bitcoin_db
 
 # Configuração do Pipeline
-COLLECTION_INTERVAL=3600          # Intervalo entre coletas em segundos (padrão: 3600 = 1 hora)
+COLLECTION_INTERVAL= 300          # Intervalo entre coletas em segundos (padrão: 300 = 5 minutos)
 DATA_RETENTION_DAYS=90            # Dias para manter os dados (padrão: 90)
 CLEANUP_INTERVAL_HOURS=24         # Intervalo de limpeza em horas (padrão: 24 = 1 vez por dia)
 

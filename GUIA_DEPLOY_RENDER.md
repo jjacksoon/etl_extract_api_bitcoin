@@ -5,8 +5,10 @@ Este guia vai te ajudar a fazer deploy do pipeline ETL no Render para rodar 24/7
 ## 📋 Pré-requisitos
 
 ✅ Conta no GitHub (gratuita)  
-✅ Conta no Render (gratuita)  
+⚠️ **Conta no Render com plano pago** (Background Workers não estão disponíveis no plano gratuito)  
 ✅ Código do projeto pronto
+
+**Nota**: O Render requer plano pago (Starter $7/mês) para Background Workers. Veja alternativas gratuitas no final deste guia.
 
 ---
 
@@ -142,7 +144,7 @@ Adicione uma por uma:
 
 Adicione também:
 
-- **Key**: `COLLECTION_INTERVAL` | **Value**: `3600` (1 hora em segundos)
+- **Key**: `COLLECTION_INTERVAL` | **Value**: `300` (5 minutos em segundos)
 - **Key**: `API_URL` | **Value**: `https://api.coinbase.com/v2/prices/BTC-USD/spot`
 - **Key**: `API_TIMEOUT` | **Value**: `10`
 - **Key**: `CRYPTO_CURRENCY` | **Value**: `BTC`
@@ -180,7 +182,7 @@ Adicione também:
    ```sql
    SELECT * FROM bitcoin_prices ORDER BY timestamp DESC LIMIT 10;
    ```
-3. Você deve ver os dados sendo inseridos a cada hora
+3. Você deve ver os dados sendo inseridos a cada 5 minutos.
 
 ---
 
@@ -230,7 +232,7 @@ Adicione também:
 
 ## 🎉 Pronto!
 
-Agora seu pipeline está rodando 24/7 no Render! Mesmo desligando seu computador, o código continuará coletando dados a cada hora.
+Agora seu pipeline está rodando 24/7 no Render! Mesmo desligando seu computador, o código continuará coletando dados a cada 5 min.
 
 ### Próximos Passos
 
@@ -240,6 +242,38 @@ Agora seu pipeline está rodando 24/7 no Render! Mesmo desligando seu computador
 - Configurar alertas (opcional)
 
 ---
+
+## 💰 Informações sobre Custos
+
+**⚠️ IMPORTANTE**: O Render **não oferece Background Workers no plano gratuito**. É necessário plano pago (Starter $7/mês mínimo).
+
+### Alternativas Gratuitas
+
+Se você precisa de uma solução gratuita, considere estas alternativas:
+
+#### 1. Railway (railway.app)
+- ✅ Plano free com créditos mensais
+- ✅ Background workers disponíveis
+- ✅ PostgreSQL incluído
+- ✅ Deploy similar ao Render
+
+#### 2. Fly.io (fly.io)
+- ✅ Plano free com limitações
+- ✅ Workers sempre ativos
+- ✅ PostgreSQL disponível
+- ✅ Boa documentação
+
+#### 3. PythonAnywhere (pythonanywhere.com)
+- ✅ Plano free limitado
+- ✅ Pode rodar scripts agendados
+- ✅ SQLite incluído
+- ⚠️ Limitações de recursos
+
+#### 4. Replit (replit.com)
+- ✅ Plano free disponível
+- ✅ Pode rodar scripts contínuos
+- ✅ PostgreSQL disponível
+- ⚠️ Pode ter limitações de uptime
 
 ## 📞 Precisa de Ajuda?
 

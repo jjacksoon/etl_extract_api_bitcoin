@@ -121,15 +121,42 @@ run_etl_pipeline(db, interval=3600, duration_days=30)
 
 ## 💰 Custos
 
-- **Free Plan**: 
-  - Worker pode "dormir" após 15 minutos de inatividade
-  - PostgreSQL gratuito com 90 dias de dados
-  - Ideal para testes
+**⚠️ IMPORTANTE**: O Render **não oferece Background Workers no plano gratuito**. É necessário um plano pago.
 
-- **Paid Plans**: 
-  - Worker sempre ativo
-  - Mais recursos
+- **Starter Plan ($7/mês)**: 
+  - Background Worker sempre ativo
+  - 1 GB RAM
   - Ideal para produção
+  - PostgreSQL gratuito disponível separadamente
+
+- **Planos Superiores**: 
+  - Mais recursos (CPU/RAM)
+  - Melhor performance
+  - Para cargas maiores
+
+### Alternativas Gratuitas
+
+Se você precisa de uma solução gratuita, considere:
+
+1. **Railway** (railway.app)
+   - Plano free com créditos mensais
+   - Background workers disponíveis
+   - PostgreSQL incluído
+
+2. **Fly.io** (fly.io)
+   - Plano free com limitações
+   - Workers sempre ativos
+   - PostgreSQL disponível
+
+3. **PythonAnywhere** (pythonanywhere.com)
+   - Plano free limitado
+   - Pode rodar scripts agendados
+   - SQLite incluído
+
+4. **Replit** (replit.com)
+   - Plano free disponível
+   - Pode rodar scripts contínuos
+   - PostgreSQL disponível
 
 ## 📊 Verificar Dados Coletados
 

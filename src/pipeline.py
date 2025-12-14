@@ -81,13 +81,13 @@ def load(dados_transformados, db_manager):
         raise
 
 
-def run_etl_pipeline(db_manager, interval=3600, retention_days=90, cleanup_interval=24):
+def run_etl_pipeline(db_manager, interval= 300, retention_days=90, cleanup_interval=24):
     """
     Executa o pipeline ETL completo de forma contínua com limpeza automática
     
     Args:
         db_manager: Instância do DatabaseManager
-        interval: Intervalo em segundos entre coletas (padrão: 3600 = 1 hora)
+        interval: Intervalo em segundos entre coletas (padrão: 300 = 5 minutos)
         retention_days: Número de dias para manter os dados (padrão: 90)
         cleanup_interval: Intervalo em horas para executar limpeza (padrão: 24 = 1 vez por dia)
     """
@@ -187,8 +187,8 @@ if __name__ == "__main__":
     database_url = get_database_url()
     
     # Obter intervalo de coleta de variável de ambiente (em segundos)
-    # Padrão: 3600 segundos (1 hora)
-    collection_interval = int(os.getenv('COLLECTION_INTERVAL', '3600'))
+    # Padrão: 300 segundos (5 minutos)
+    collection_interval = int(os.getenv('COLLECTION_INTERVAL', '300'))
     
     # Obter período de retenção de dados (em dias)
     # Padrão: 90 dias
