@@ -81,19 +81,24 @@ def load(dados_transformados, db_manager):
         raise
 
 
-def run_etl_pipeline(db_manager, interval=3600):
+def run_etl_pipeline(db_manager, interval=3600, retention_days=90, cleanup_interval=24):
     """
-    Executa o pipeline ETL completo de forma contínua
+    Executa o pipeline ETL completo de forma contínua com limpeza automática
     
     Args:
         db_manager: Instância do DatabaseManager
         interval: Intervalo em segundos entre coletas (padrão: 3600 = 1 hora)
+        retention_days: Número de dias para manter os dados (padrão: 90)
+        cleanup_interval: Intervalo em horas para executar limpeza (padrão: 24 = 1 vez por dia)
     """
     start_time = datetime.now()
+    last_cleanup = start_time
     
     print("=" * 60)
     print("Iniciando pipeline ETL automático...")
     print(f"Coleta de dados a cada {interval // 60} minutos ({interval} segundos)")
+    print(f"Limpeza automática: Mantendo últimos {retention_days} dias")
+    print(f"Limpeza executada a cada {cleanup_interval} horas")
     print(f"Data de início: {start_time.strftime('%Y-%m-%d %H:%M:%S')}")
     print("Pipeline rodando continuamente...")
     print("=" * 60)
@@ -119,6 +124,17 @@ def run_etl_pipeline(db_manager, interval=3600):
             load(dados_transformados, db_manager)
             
             coleta_count += 1
+            
+            # Verificar se é hora de fazer limpeza automática
+            hours_since_cleanup = (current_time - last_cleanup).total_seconds() / 3600
+            if hours_since_cleanup >= cleanup_interval:
+                print(f"\n--- Executando limpeza automática (última limpeza há {hours_since_cleanup:.1f} horas) ---")
+                total_before = db_manager.get_total_records()
+                deleted = db_manager.cleanup_old_data(retention_days=retention_days)
+                total_after = db_manager.get_total_records()
+                print(f"Total de registros: {total_before} → {total_after} (removidos: {deleted})")
+                print("--- Limpeza concluída ---\n")
+                last_cleanup = current_time
             
             print(f"Próxima coleta em {interval // 60} minutos ({interval} segundos)...")
             print()
@@ -174,13 +190,32 @@ if __name__ == "__main__":
     # Padrão: 3600 segundos (1 hora)
     collection_interval = int(os.getenv('COLLECTION_INTERVAL', '3600'))
     
+    # Obter período de retenção de dados (em dias)
+    # Padrão: 90 dias
+    retention_days = int(os.getenv('DATA_RETENTION_DAYS', '90'))
+    
+    # Obter intervalo de limpeza (em horas)
+    # Padrão: 24 horas (1 vez por dia)
+    cleanup_interval = int(os.getenv('CLEANUP_INTERVAL_HOURS', '24'))
+    
     # Inicializar gerenciador do banco de dados
     db = DatabaseManager(database_url=database_url)
     
     # Criar tabelas se não existirem
     db.create_tables()
     
+    # Executar limpeza inicial (remove dados antigos que possam existir)
+    print("Executando limpeza inicial...")
+    db.cleanup_old_data(retention_days=retention_days)
+    print()
+    
     # Executar pipeline ETL
     # Intervalo configurável via variável de ambiente COLLECTION_INTERVAL
-    # Pipeline roda continuamente no servidor
-    run_etl_pipeline(db, interval=collection_interval)
+    # Retenção configurável via variável de ambiente DATA_RETENTION_DAYS
+    # Pipeline roda continuamente no servidor com limpeza automática
+    run_etl_pipeline(
+        db, 
+        interval=collection_interval,
+        retention_days=retention_days,
+        cleanup_interval=cleanup_interval
+    )

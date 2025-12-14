@@ -1,7 +1,7 @@
 from sqlalchemy import create_engine, Column, String, Float, DateTime
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
-from datetime import datetime
+from datetime import datetime, timedelta
 
 # Base para os modelos
 Base = declarative_base()
@@ -135,6 +135,55 @@ class DatabaseManager:
             ).order_by(BitcoinPrice.timestamp.desc()).all()
             
             return prices
+        finally:
+            session.close()
+    
+    def cleanup_old_data(self, retention_days=90):
+        """
+        Remove registros mais antigos que o período de retenção especificado
+        
+        Args:
+            retention_days: Número de dias para manter os dados (padrão: 90)
+        
+        Returns:
+            int: Número de registros removidos
+        """
+        session = self.SessionLocal()
+        try:
+            # Calcular data limite (hoje - retention_days)
+            cutoff_date = datetime.now() - timedelta(days=retention_days)
+            
+            # Contar registros que serão removidos
+            count_before = session.query(BitcoinPrice).filter(
+                BitcoinPrice.timestamp < cutoff_date
+            ).count()
+            
+            # Remover registros antigos
+            deleted = session.query(BitcoinPrice).filter(
+                BitcoinPrice.timestamp < cutoff_date
+            ).delete()
+            
+            session.commit()
+            
+            if deleted > 0:
+                print(f"Limpeza automática: {deleted} registro(s) removido(s) (anteriores a {cutoff_date.strftime('%Y-%m-%d %H:%M:%S')})")
+            else:
+                print(f"Limpeza automática: Nenhum registro antigo encontrado (mantendo últimos {retention_days} dias)")
+            
+            return deleted
+        except Exception as e:
+            session.rollback()
+            print(f"Erro ao realizar limpeza automática: {e}")
+            return 0
+        finally:
+            session.close()
+    
+    def get_total_records(self):
+        """Retorna o total de registros no banco"""
+        session = self.SessionLocal()
+        try:
+            count = session.query(BitcoinPrice).count()
+            return count
         finally:
             session.close()
     

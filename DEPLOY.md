@@ -59,6 +59,11 @@ No dashboard do Render, vá em **Environment** e configure as seguintes variáve
 - `API_TIMEOUT`: Timeout da requisição em segundos (padrão: `10`)
 - `CRYPTO_CURRENCY`: Criptomoeda a coletar (padrão: `BTC`)
 - `FIAT_CURRENCY`: Moeda fiat de referência (padrão: `USD`)
+- `DATA_RETENTION_DAYS`: Número de dias para manter os dados (padrão: `90`)
+  - Dados mais antigos serão removidos automaticamente
+  - Exemplo: `90` = mantém últimos 90 dias
+- `CLEANUP_INTERVAL_HOURS`: Intervalo em horas para executar limpeza (padrão: `24`)
+  - Exemplo: `24` = limpeza 1 vez por dia
 
 **Nota**: O código funciona com SQLite por padrão, mas PostgreSQL é recomendado para produção.
 
